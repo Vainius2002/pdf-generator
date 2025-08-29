@@ -35,7 +35,7 @@ class PDFOverlayGenerator:
             'red': Color(0.8, 0.1, 0.2)
         }
         
-    def create_overlay(self, car_data, qr_data=None):
+    def create_overlay(self, qr_data=None):
         """Create an overlay with the data to be added"""
         # Create a BytesIO buffer for the overlay
         packet = io.BytesIO()
@@ -53,21 +53,6 @@ class PDFOverlayGenerator:
             main_font = 'Helvetica'
             bold_font = 'Helvetica-Bold'
         
-        # # ONLY add the requested filled fields:
-        # # 1. Phone number (in the gray phone field)
-        # c.setFillColor(self.colors['black'])
-        # c.setFont(bold_font, 20)
-        # # Phone field is around middle-left of page
-        # c.drawString(145, 563, car_data.get('phone', '+370 656 61866'))
-        
-        # # 2. Lizingo laikotarpis (after the red label)
-        # c.setFillColor(self.colors['black'])  # Black text for the value
-        # c.setFont(main_font, 11)
-        # c.drawString(215, 438, car_data.get('lizingo_laikotarpis', '60 mėn.'))
-        
-        # # 3. Pradinė įmoka (after the red label)
-        # c.setFont(main_font, 11)
-        # c.drawString(215, 423, car_data.get('pradine_imoka', '30%'))
         
         # Add QR code if provided
         if qr_data:
@@ -111,14 +96,14 @@ class PDFOverlayGenerator:
         
         return packet
     
-    def generate_pdf(self, car_data, output_file="price_filled.pdf", qr_data=None):
+    def generate_pdf(self, output_file="price_filled.pdf", qr_data=None):
         """Generate PDF by overlaying data on template"""
         # Read the template PDF
         template_pdf = PdfReader(self.template_path)
         template_page = template_pdf.pages[0]
         
         # Create overlay
-        overlay_buffer = self.create_overlay(car_data, qr_data)
+        overlay_buffer = self.create_overlay(qr_data)
         overlay_pdf = PdfReader(overlay_buffer)
         overlay_page = overlay_pdf.pages[0]
         
@@ -156,16 +141,10 @@ def main():
     # Generate PDF with minimal data
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_file = f"pdfs/price_overlay_{timestamp}.pdf"
-    
-    # Only fill the requested fields
-    car_data = {
-        "phone": "+370 656 61866",
-        "lizingo_laikotarpis": "60 mėn.",
-        "pradine_imoka": "30%"
-    }
+
     
     try:
-        generator.generate_pdf(car_data, output_file, qr_data=qr_data)
+        generator.generate_pdf(output_file, qr_data=qr_data)
         print(f"\n✅ Success! PDF generated: {output_file}")
         print("\nThis PDF uses the EXACT design from PRICE.PDF!")
         print("Only filled: Phone, Lizingo laikotarpis, Pradinė įmoka")
