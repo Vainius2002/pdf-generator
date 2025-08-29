@@ -93,9 +93,9 @@ class PDFOverlayGenerator:
             qr_img.save(qr_temp_path)
             
             # Add QR code to PDF (bottom left position)
-            qr_x = 211.5
-            qr_y = 241.5
-            qr_size = 120
+            qr_x = 31
+            qr_y = 31
+            qr_size = 150
             
             c.drawImage(qr_temp_path, qr_x, qr_y, width=qr_size, height=qr_size)
             
